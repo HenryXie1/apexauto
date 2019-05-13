@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	//appsv1 "k8s.io/api/apps/v1"
-	//metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	corev1 "k8s.io/api/core/v1"
 	//utilexec "k8s.io/client-go/util/exec"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
@@ -266,4 +266,55 @@ func ExecPodCmd(o *ApexOperations,Podname string,SqlCommand []string) error {
 		return nil
 	}
 	
+}
+func CreateSqlplusPod(o *ApexOperations) error{
+
+	  typeMetadata := metav1.TypeMeta{
+				Kind:       "Pod",
+				APIVersion: "v1",
+		}
+		objectMetadata := metav1.ObjectMeta{
+			GenerateName: "sqlpluspod",
+			Namespace:    "default",
+		}
+		podSpecs := corev1.PodSpec{
+			Containers:    []corev1.Container{{
+				Name: "sqlpluspod",
+				Image: "iad.ocir.io/espsnonprodint/livesqlsandbox/instantclient:apex19",
+			}},
+		}
+		pod := corev1.Pod{
+				TypeMeta:   typeMetadata,
+				ObjectMeta: objectMetadata,
+				Spec:       podSpecs,
+	}
+
+	createdPod, err := o.clientset.CoreV1().Pods("default").Create(&pod)
+	if err != nil {
+		return fmt.Errorf("error in creating sqlpluspod: %v", err)
+	}
+
+	verifyPodState := func() bool {
+		podStatus, err := o.clientset.CoreV1().Pods("default").Get(createdPod.Name, metav1.GetOptions{})
+		if err != nil {
+			return false
+		} 
+		
+		if podStatus.Status.Phase == corev1.PodRunning {
+			return true
+		} 
+		return false
+ }
+	//3 min timeout for starting pod
+  for i:=0;i<36;i++{
+		if  !verifyPodState() { 
+			fmt.Println("waiting for sqlpluspod to start.......")
+			time.Sleep(5 * time.Second)
+			
+		} else {
+			fmt.Println("sqlpluspod started.......")
+			return nil
+		}
+	}
+ return fmt.Errorf("Timeout to start sqlpluspod : %v", err)
 }
