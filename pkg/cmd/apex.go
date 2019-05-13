@@ -165,18 +165,24 @@ func (o *ApexOperations) Validate(cmd *cobra.Command) error {
 
 func (o *ApexOperations) Run() error {
 	
+	//create sqlpluspod
+	CreateSqlplusPod(o)
+	
 	if o.UserSpecifiedList {
 		ListOption(o)
+		DeleteSqlplusPod(o)
 	    return nil
 	}
 	
 	if o.UserSpecifiedCreate {
 		 CreateOption(o)
+		 DeleteSqlplusPod(o)
 		 return nil
 	}
 	
 	if o.UserSpecifiedDelete {
 		DeleteOption(o)
+		DeleteSqlplusPod(o)
 		return nil
    }
    
@@ -274,7 +280,7 @@ func CreateSqlplusPod(o *ApexOperations) error{
 				APIVersion: "v1",
 		}
 		objectMetadata := metav1.ObjectMeta{
-			GenerateName: "sqlpluspod",
+			Name: "sqlpluspod",
 			Namespace:    "default",
 		}
 		podSpecs := corev1.PodSpec{
@@ -288,12 +294,12 @@ func CreateSqlplusPod(o *ApexOperations) error{
 				ObjectMeta: objectMetadata,
 				Spec:       podSpecs,
 	}
-
+	fmt.Println("Creating sqlpluspod .......")
 	createdPod, err := o.clientset.CoreV1().Pods("default").Create(&pod)
 	if err != nil {
 		return fmt.Errorf("error in creating sqlpluspod: %v", err)
 	}
-
+  time.Sleep(5 * time.Second)
 	verifyPodState := func() bool {
 		podStatus, err := o.clientset.CoreV1().Pods("default").Get(createdPod.Name, metav1.GetOptions{})
 		if err != nil {
@@ -317,4 +323,22 @@ func CreateSqlplusPod(o *ApexOperations) error{
 		}
 	}
  return fmt.Errorf("Timeout to start sqlpluspod : %v", err)
+}
+
+func DeleteSqlplusPod(o *ApexOperations) error{
+
+fmt.Println("Deleting sqlpluspod .......")
+deletePolicy := metav1.DeletePropagationForeground
+
+err := o.clientset.CoreV1().Pods("default").Delete("sqlpluspod", 
+      &metav1.DeleteOptions{
+	    PropagationPolicy: &deletePolicy,
+      })
+if err != nil {
+	return fmt.Errorf("error in deleting sqlpluspod: %v", err)
+} else {
+	fmt.Println("Deleted sqlpluspod .......")
+	return nil
+}
+
 }
