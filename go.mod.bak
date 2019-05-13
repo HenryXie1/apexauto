@@ -1,0 +1,23 @@
+module apexau
+
+go 1.12
+
+require (
+	github.com/docker/distribution v2.7.1+incompatible // indirect
+	github.com/google/btree v1.0.0 // indirect
+	github.com/gregjones/httpcache v0.0.0-20190212212710-3befbb6ad0cc // indirect
+	github.com/imdario/mergo v0.3.7 // indirect
+	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
+	github.com/pkg/errors v0.8.1
+	github.com/sirupsen/logrus v1.4.1
+	github.com/spf13/cobra v0.0.3
+	github.com/spf13/pflag v1.0.3
+	github.com/spf13/viper v1.3.2
+	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
+	k8s.io/api v0.0.0-20190503110853-61630f889b3c
+	k8s.io/apiextensions-apiserver v0.0.0-20190503111720-ae1f9335ecc1 // indirect
+	k8s.io/apimachinery v0.0.0-20190502092502-a44ef629a3c9
+	k8s.io/cli-runtime v0.0.0-20190501013422-5d9868860df7
+	k8s.io/client-go v0.0.0-20190425172711-65184652c889
+	k8s.io/utils v0.0.0-20190308190857-21c4ce38f2a7 // indirect
+)
