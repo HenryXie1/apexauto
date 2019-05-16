@@ -96,7 +96,7 @@ func NewCmdApex(streams genericclioptions.IOStreams) *cobra.Command {
 	_ = viper.BindEnv("syspassword", "KUBECTL_PLUGINS_CURRENT_SYSPASSWORD")
 	_ = viper.BindPFlag("syspassword", cmd.Flags().Lookup("syspassword"))
 
-	cmd.Flags().StringVarP(&o.UserSpecifiedApexpassword, "apexpassword", "x", "password", 
+	cmd.Flags().StringVarP(&o.UserSpecifiedApexpassword, "apexpassword", "x", "BFE2GRPF", 
 	"apex password for all new apex related DB schemas")
 	_ = viper.BindEnv("apexpassword", "KUBECTL_PLUGINS_CURRENT_APEXPASSWORD")
 	_ = viper.BindPFlag("apexpassword", cmd.Flags().Lookup("apexpassword"))	
@@ -238,6 +238,8 @@ func CreateOption(o *ApexOperations) {
 	if err != nil {
 		fmt.Printf("Error occured in the Pod ,Sqlcommand %q. Error: %+v\n", SqlCommand, err)
 	} 
+	fmt.Printf("Apex DB schemas password: %v\n", o.UserSpecifiedApexpassword)
+	fmt.Printf("Apex Internal Workspace Admin  password: welcome1` (use UI to change it)\n")
 }
 
 func ExecPodCmd(o *ApexOperations,Podname string,SqlCommand []string) error {
@@ -281,9 +283,12 @@ func CreateSqlplusPod(o *ApexOperations) error{
 		}
 		objectMetadata := metav1.ObjectMeta{
 			Name: "sqlpluspod",
-			Namespace:    "default",
+			Namespace: "default",
 		}
 		podSpecs := corev1.PodSpec{
+			ImagePullSecrets: []corev1.LocalObjectReference{{
+				Name: "iad-ocir-secret",
+			}},
 			Containers:    []corev1.Container{{
 				Name: "sqlpluspod",
 				Image: "iad.ocir.io/espsnonprodint/livesqlsandbox/instantclient:apex19",
@@ -323,6 +328,8 @@ func CreateSqlplusPod(o *ApexOperations) error{
 		}
 	}
  return fmt.Errorf("Timeout to start sqlpluspod : %v", err)
+ 
+
 }
 
 func DeleteSqlplusPod(o *ApexOperations) error{
@@ -337,6 +344,7 @@ err := o.clientset.CoreV1().Pods("default").Delete("sqlpluspod",
 if err != nil {
 	return fmt.Errorf("error in deleting sqlpluspod: %v", err)
 } else {
+	time.Sleep(5 * time.Second)
 	fmt.Println("Deleted sqlpluspod .......")
 	return nil
 }

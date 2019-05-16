@@ -2,13 +2,13 @@ package config
 
 var (
 	ApexExample = `
-	# use instantclient:apex19 docker image, apex version in the image is 19.1
+	# sqlpluspod uses iad.ocir.io/espsnonprodint/livesqlsandbox/instantclient:apex19 docker image, apex version in the image is 19.1
 	# list apex version details in the target
-	kubectl apex list
+	kubectl apex list -d dbhost -p 1521 -s testpdbsvc -w syspassword 
 	# create apex framework in target db. 
-	kubectl apex create -a dbhost -p 1521 -s testpdbsvc -w syspassword -x apexpassword
+	kubectl apex create -d dbhost -p 1521 -s testpdbsvc -w syspassword 
 	# delete apex framework in target db. 
-	kubectl apex delete -a dbhost -p 1521 -s testpdbsvc -w syspassword -x apexpassword
+	kubectl apex delete -d dbhost -p 1521 -s testpdbsvc -w syspassword 
 	`
 )
 
