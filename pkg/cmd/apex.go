@@ -59,7 +59,7 @@ func NewCmdApex(streams genericclioptions.IOStreams) *cobra.Command {
 	o := NewApexOperations(streams)
 
 	cmd := &cobra.Command{
-		Use:          "apex list|create|delete [-d dbhostname] [-p 1521] [-s dbservice] [-w syspassword] [-x apexpassword] ",
+		Use:          "kubectl-apex list|create|delete [-d dbhostname] [-p 1521] [-s dbservice] [-w syspassword] [-x apexpassword] ",
 		Short:        "create or delete apex 19.1 deployment in target DB",
 		Example:      fmt.Sprintf(config.ApexExample),
 		SilenceUsage: true,
@@ -239,7 +239,7 @@ func CreateOption(o *ApexOperations) {
 		fmt.Printf("Error occured in the Pod ,Sqlcommand %q. Error: %+v\n", SqlCommand, err)
 	} 
 	fmt.Printf("Apex DB schemas password: %v\n", o.UserSpecifiedApexpassword)
-	fmt.Printf("Apex Internal Workspace Admin  password: welcome1` (use UI to change it)\n")
+	fmt.Printf("Apex Internal Workspace Admin  password: Welcome1` (use Web UI to change it)\n")
 }
 
 func ExecPodCmd(o *ApexOperations,Podname string,SqlCommand []string) error {
