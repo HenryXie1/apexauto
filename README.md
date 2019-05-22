@@ -14,7 +14,7 @@ sqlpluspod is based on DB instantclient docker images of [oracle github](https:/
 
 Download kubectl via [official guide](https://kubernetes.io/docs/tasks/tools/install-kubectl/) and configure access for your kubernetes cluster. Confirm kubectl get nodes is working
 
-Download binary from [release link](https://github.com/HenryXie1/oradbauto/releases/download/v1.0/kubectl-oradb)
+Download binary from [release link](https://github.com/HenryXie1/apexauto/releases/download/v1.0/kubectl-apex)
 Save it to /usr/local/bin of linux box (only linux supported as for now), No installation needed, download and run   
 ### Usage
 ```
