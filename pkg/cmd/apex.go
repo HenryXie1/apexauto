@@ -286,12 +286,12 @@ func CreateSqlplusPod(o *ApexOperations) error{
 			Namespace: "default",
 		}
 		podSpecs := corev1.PodSpec{
-			ImagePullSecrets: []corev1.LocalObjectReference{{
-				Name: "iad-ocir-secret",
-			}},
+			//ImagePullSecrets: []corev1.LocalObjectReference{{
+			//	Name: "iad-ocir-secret",
+			//}},
 			Containers:    []corev1.Container{{
 				Name: "sqlpluspod",
-				Image: "iad.ocir.io/espsnonprodint/livesqlsandbox/instantclient:apex19",
+				Image: "iad.ocir.io/espsocicorpnonprod/autostg/instantclient:apex19",
 			}},
 		}
 		pod := corev1.Pod{
@@ -344,7 +344,7 @@ err := o.clientset.CoreV1().Pods("default").Delete("sqlpluspod",
 if err != nil {
 	return fmt.Errorf("error in deleting sqlpluspod: %v", err)
 } else {
-	time.Sleep(5 * time.Second)
+	time.Sleep(15 * time.Second)
 	fmt.Println("Deleted sqlpluspod .......")
 	return nil
 }
