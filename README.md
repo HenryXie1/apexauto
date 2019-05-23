@@ -8,7 +8,7 @@ A kubectl plugin that create Apex (oracle application express) 19.1 on oracle da
 sqlpluspod is based on DB instantclient docker images of [oracle github](https://github.com/oracle/docker-images).
 
 ### Demo
-![Demo!](images/kubectl-apex-create.gif)
+![Demo!](images/kubectl-apex-create1.gif)
 
 ## Installation
 
