@@ -239,7 +239,7 @@ func CreateOption(o *ApexOperations) {
 		fmt.Printf("Error occured in the Pod ,Sqlcommand %q. Error: %+v\n", SqlCommand, err)
 	} 
 	fmt.Printf("Apex DB schemas password: %v\n", o.UserSpecifiedApexpassword)
-	fmt.Printf("Apex Internal Workspace Admin  password: Welcome1` (use Web UI to change it)\n")
+	fmt.Printf("Apex Internal Workspace Admin password: Welcome1` (Use apxchpwd.sql to change it)\n")
 }
 
 func ExecPodCmd(o *ApexOperations,Podname string,SqlCommand []string) error {
@@ -291,7 +291,7 @@ func CreateSqlplusPod(o *ApexOperations) error{
 			//}},
 			Containers:    []corev1.Container{{
 				Name: "sqlpluspod",
-				Image: "iad.ocir.io/espsocicorpnonprod/autostg/instantclient:apex19",
+				Image: "iad.ocir.io/espsnonprodint/autostg/instantclient-apex19:v1",
 			}},
 		}
 		pod := corev1.Pod{
@@ -302,6 +302,7 @@ func CreateSqlplusPod(o *ApexOperations) error{
 	fmt.Println("Creating sqlpluspod .......")
 	createdPod, err := o.clientset.CoreV1().Pods("default").Create(&pod)
 	if err != nil {
+		fmt.Println(err)
 		return fmt.Errorf("error in creating sqlpluspod: %v", err)
 	}
   time.Sleep(5 * time.Second)
