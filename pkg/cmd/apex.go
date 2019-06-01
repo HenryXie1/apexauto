@@ -42,6 +42,7 @@ type ApexOperations struct {
 	UserSpecifiedCreate   bool
 	UserSpecifiedDelete   bool
 	UserSpecifiedList     bool
+	UserSpecifiedApexRuntime bool
 	
 
 }
@@ -59,8 +60,8 @@ func NewCmdApex(streams genericclioptions.IOStreams) *cobra.Command {
 	o := NewApexOperations(streams)
 
 	cmd := &cobra.Command{
-		Use:          "kubectl-apex list|create|delete [-d dbhostname] [-p 1521] [-s dbservice] [-w syspassword] [-x apexpassword] ",
-		Short:        "create or delete apex 19.1 deployment in target DB",
+		Use:          "kubectl-apex list|create|delete [-d dbhostname] [-p 1521] [-s dbservice] [-w syspassword] [-x apexpassword] [-r]",
+		Short:        "create or delete apex 19.1 deployment in target DB, -r for runtime only",
 		Example:      fmt.Sprintf(config.ApexExample),
 		SilenceUsage: true,
 		RunE: func(c *cobra.Command, args []string) error {
@@ -100,6 +101,11 @@ func NewCmdApex(streams genericclioptions.IOStreams) *cobra.Command {
 	"apex password for all new apex related DB schemas")
 	_ = viper.BindEnv("apexpassword", "KUBECTL_PLUGINS_CURRENT_APEXPASSWORD")
 	_ = viper.BindPFlag("apexpassword", cmd.Flags().Lookup("apexpassword"))	
+
+	cmd.Flags().BoolVarP(&o.UserSpecifiedApexRuntime, "runtime", "r",false, 
+	"specify to install Apex runtime only ,default is false")
+	_ = viper.BindEnv("runtime", "KUBECTL_PLUGINS_CURRENT_RUNTIME")
+	_ = viper.BindPFlag("runtime", cmd.Flags().Lookup("runtime"))	
 
 	return cmd
 }
@@ -175,6 +181,11 @@ func (o *ApexOperations) Run() error {
 	}
 	
 	if o.UserSpecifiedCreate {
+		 if o.UserSpecifiedApexRuntime {
+				CreateRuntimeOption(o)
+				DeleteSqlplusPod(o)
+				return nil
+		 }
 		 CreateOption(o)
 		 DeleteSqlplusPod(o)
 		 return nil
@@ -240,6 +251,31 @@ func CreateOption(o *ApexOperations) {
 	} 
 	fmt.Printf("Apex DB schemas password: %v\n", o.UserSpecifiedApexpassword)
 	fmt.Printf("Apex Internal Workspace Admin password: Welcome1` (Use apxchpwd.sql to change it)\n")
+}
+
+func CreateRuntimeOption(o *ApexOperations) {
+	
+	fmt.Printf("Create Apex runtime only in Target DB....\n")
+	sqltext := "sqlplus " + "sys/" + o.UserSpecifiedSyspassword + "@" + o.UserSpecifiedDbhost + ":" + o.UserSpecifiedDbport + "/" + o.UserSpecifiedService + " as sysdba " + "@createapexruntimeonly.sql"
+	//fmt.Println(sqltext)
+	SqlCommand := []string{"/bin/sh", "-c", sqltext}	 
+	Podname := "sqlpluspod"
+	err := ExecPodCmd(o,Podname,SqlCommand)
+	if err != nil {
+		fmt.Printf("Error occured in the Pod ,Sqlcommand %q. Error: %+v\n", SqlCommand, err)
+	} 
+
+	fmt.Printf("Update Apex schema password in Target DB....\n")
+	sqltext = "sqlplus " + "sys/" + o.UserSpecifiedSyspassword + "@" + o.UserSpecifiedDbhost + ":" + o.UserSpecifiedDbport + "/" + o.UserSpecifiedService + " as sysdba " + "@updatepass.sql " + o.UserSpecifiedApexpassword
+	//fmt.Println(sqltext)
+	SqlCommand = []string{"/bin/sh", "-c", sqltext}	 
+	Podname = "sqlpluspod"
+	err = ExecPodCmd(o,Podname,SqlCommand)
+	if err != nil {
+		fmt.Printf("Error occured in the Pod ,Sqlcommand %q. Error: %+v\n", SqlCommand, err)
+	} 
+	fmt.Printf("Apex DB schemas password: %v\n", o.UserSpecifiedApexpassword)
+	//fmt.Printf("Apex Internal Workspace Admin password: Welcome1` (Use apxchpwd.sql to change it)\n")
 }
 
 func ExecPodCmd(o *ApexOperations,Podname string,SqlCommand []string) error {
@@ -345,7 +381,7 @@ err := o.clientset.CoreV1().Pods("default").Delete("sqlpluspod",
 if err != nil {
 	return fmt.Errorf("error in deleting sqlpluspod: %v", err)
 } else {
-	time.Sleep(15 * time.Second)
+	time.Sleep(10 * time.Second)
 	fmt.Println("Deleted sqlpluspod .......")
 	return nil
 }
