@@ -18,27 +18,30 @@ Download binary from [release link](https://github.com/HenryXie1/apexauto/releas
 Save it to /usr/local/bin of linux box (only linux supported as for now), No installation needed, download and run   
 ### Usage
 ```
-$kubectl-apex
 Usage:
-kubectl-apex list|create|delete [-d dbhostname] [-p 1521] [-s dbservice] [-w syspassword] [-x apexpassword] [flags]
+  kubectl-apex list|create|delete [-d dbhostname] [-p 1521] [-s dbservice] [-w syspassword] [-x apexpassword] [-r] [flags]
+
 Examples:
-# 
-# list apex version details in the target
-kubectl-apex list -d dbhost -p 1521 -s testpdbsvc -w syspassword 
-# create apex framework in target db. 
-kubectl-apex create -d dbhost -p 1521 -s testpdbsvc -w syspassword 
-# delete apex framework in target db. 
-kubectl-apex delete -d dbhost -p 1521 -s testpdbsvc -w syspassword
+
+        # 
+        # list apex version details in the target
+        kubectl-apex list -d dbhost -p 1521 -s testpdbsvc -w syspassword 
+        # create apex full development apex framework in target db. 
+        kubectl-apex create -d dbhost -p 1521 -s testpdbsvc -w syspassword 
+        # create apex runtime only framework in target db. 
+        kubectl-apex create -d dbhost -p 1521 -s testpdbsvc -w syspassword -r
+        # delete apex framework in target db. 
+        kubectl-apex delete -d dbhost -p 1521 -s testpdbsvc -w syspassword 
 
 
 Flags:
--x, --apexpassword string apex password for all new apex related DB schemas (default "*****")
--d, --dbhost string DB hostname or IP address
--p, --dbport string DB port to access (default "1521")
--h, --help help for apex
--s, --service string DB service to access
--w, --syspassword string sys password of DB service
-Error: Please check kubectl-apex -h for usage
+  -x, --apexpassword string   apex password for all new apex related DB schemas (default "BFE2GRPF")
+  -d, --dbhost string         DB hostname or IP address
+  -p, --dbport string         DB port to access (default "1521")
+  -h, --help                  help for kubectl-apex
+  -r, --runtime               specify to install Apex runtime only ,default is false
+  -s, --service string        DB service to access
+  -w, --syspassword string    sys password of DB service
 ```
 
 ### Contribution

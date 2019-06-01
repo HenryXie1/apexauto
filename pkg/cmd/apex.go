@@ -61,7 +61,7 @@ func NewCmdApex(streams genericclioptions.IOStreams) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:          "kubectl-apex list|create|delete [-d dbhostname] [-p 1521] [-s dbservice] [-w syspassword] [-x apexpassword] [-r]",
-		Short:        "create or delete apex 19.1 deployment in target DB, -r for runtime only",
+		Short:        "create or delete apex 19.1 deployment in target DB, -r for apex runtime only",
 		Example:      fmt.Sprintf(config.ApexExample),
 		SilenceUsage: true,
 		RunE: func(c *cobra.Command, args []string) error {
