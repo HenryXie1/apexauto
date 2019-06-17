@@ -353,8 +353,8 @@ func CreateSqlplusPod(o *ApexOperations) error{
 		} 
 		return false
  }
-	//3 min timeout for starting pod
-  for i:=0;i<36;i++{
+	//8 min timeout for starting pod
+  for i:=0;i<96;i++{
 		if  !verifyPodState() { 
 			fmt.Println("waiting for sqlpluspod to start.......")
 			time.Sleep(5 * time.Second)
