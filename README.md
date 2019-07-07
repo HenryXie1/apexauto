@@ -1,6 +1,6 @@
 # Automation tool to create Apex 19.1 in K8S
 
-A kubectl plugin that create Apex (oracle application express) 19.1 on oracle database .
+A kubectl plugin that create Apex (Oracle Application Express) 19.1 on oracle database .
 
 
 ### Intro
